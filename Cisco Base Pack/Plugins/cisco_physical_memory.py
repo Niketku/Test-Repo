@@ -57,12 +57,13 @@ snippet_arguments = {
     'Processor Memory Used': [],
     'Processor Memory Free':[],
     'Total Memory Free': [],
-    'Total Memory Used':[]
+    'Total Memory Used':[],
+    'Total Memory Used %':[]
     }
 
 labels = []
 
-pre_obj= {'io_memUsed': 'IO Memory Used', 'io_memFree': 'IO Memory Free', 'proc_memUsed': 'Processor Memory Used', 'proc_memFree': 'Processor Memory Free', 'total_memFree': 'Total Memory Free', 'total_memUsed': 'Total Memory Used'}
+pre_obj= {'io_memUsed': 'IO Memory Used', 'io_memFree': 'IO Memory Free', 'proc_memUsed': 'Processor Memory Used', 'proc_memFree': 'Processor Memory Free', 'total_memUsed': 'Total Memory Used', 'total_memFree': 'Total Memory Free'}
 
 entPhysicalName_oid = '.1.3.6.1.2.1.47.1.1.1.1.7'
 mib_toUse = None
@@ -308,7 +309,7 @@ if mib_toUse == ENHANCED_MIB_MEMPOOL_TYPE:
                 temp_total_used = get_oid_value(newMib_oids['used'] + "." + index)
             if temp_total_used is not None:
                 ent_physical_name_list[entPhysicalName]['total_memUsed'] += int(temp_total_used)
-        
+
             temp_total_free = get_oid_value(newMib_oids['HCfree'] + "." + index)
             if temp_total_free is None:
                 temp_total_free = get_oid_value(newMib_oids['free'] + "." + index)
@@ -375,7 +376,7 @@ elif mib_toUse == OLD_MEMORY_POOL_NAME:
             temp_old_total_used = get_oid_value(newMib_oids['used'] + "." + index)
             if temp_old_total_used is not None:
                 ent_physical_name_list[entPhysicalName]['total_memUsed'] += int(temp_old_total_used)
-       
+
             temp_old_total_free = get_oid_value(newMib_oids['free'] + "." + index)
             if temp_old_total_free is not None:
                 ent_physical_name_list[entPhysicalName]['total_memFree'] += int(temp_old_total_free)
@@ -450,20 +451,23 @@ elif mib_toUse == PROCESS_cpmCPUMemoryUsed:
                     labels.append((index, default_cpu_name_structrue.format('cpu', index)))
 
 
+# adding ent_physical_name_list items to snippet_arguments
 for key, value in ent_physical_name_list.items():
     fill_result_handler(value)
 
-idu,us = snippet_arguments['Total Memory Used']
-idf,fr = snippet_arguments['Total Memory Free']
+us = snippet_arguments['Total Memory Used']
+fr = snippet_arguments['Total Memory Free']
+
+# pres_obj Total Memory Used % calculation
 for idu,us in snippet_arguments['Total Memory Used']:
     for idf,fr in snippet_arguments['Total Memory Free']:
         if idu == idu:
             snippet_arguments['Total Memory Used %'].append((idu,round(us*100/(us+fr),2) if us+fr != 0 else 0))
-            
-#print("mib_toUse", mib_toUse, description)
-#print("snippet_arguments", snippet_arguments, label)
+            break
+
+
 if snippet_arguments:
     print("Collections collected successfully")
-    print(snmp_h.construct_Json({"1":snippet_arguments},label={"1":dict(labels)},perf_plugin=True,kpi_unit="Bytes",kpi_suffix="B"))
+    print(snmp_h.construct_Json({"1":snippet_arguments},label={"1":dict(labels)},perf_plugin=True))
 else:
     print("Data not collected")
