@@ -55,12 +55,14 @@ snippet_arguments = {
     'IO Memory Used': [],
     'IO Memory Free': [],
     'Processor Memory Used': [],
-    'Processor Memory Free':[]
+    'Processor Memory Free':[],
+    'Total Memory Free': [],
+    'Total Memory Used':[]
     }
 
 labels = []
 
-pre_obj= {'io_memUsed': 'IO Memory Used', 'io_memFree': 'IO Memory Free', 'proc_memUsed': 'Processor Memory Used', 'proc_memFree': 'Processor Memory Free'}
+pre_obj= {'io_memUsed': 'IO Memory Used', 'io_memFree': 'IO Memory Free', 'proc_memUsed': 'Processor Memory Used', 'proc_memFree': 'Processor Memory Free', 'total_memFree': 'Total Memory Free', 'total_memUsed': 'Total Memory Used'}
 
 entPhysicalName_oid = '.1.3.6.1.2.1.47.1.1.1.1.7'
 mib_toUse = None
@@ -268,7 +270,7 @@ if mib_toUse == ENHANCED_MIB_MEMPOOL_TYPE:
             if temp_process_used is not None:
                 aux_process_used = int(temp_process_used)
                 ent_physical_name_list[entPhysicalName]['proc_memUsed'] = aux_process_used
-    #            ent_physical_name_list[entPhysicalName]['total_memUsed'] += aux_process_used
+                ent_physical_name_list[entPhysicalName]['total_memUsed'] += aux_process_used
 
             temp_process_free = get_oid_value(newMib_oids['HCfree'] + "." + index)
             if temp_process_free is None:
@@ -276,7 +278,7 @@ if mib_toUse == ENHANCED_MIB_MEMPOOL_TYPE:
             if temp_process_free is not None:
                 aux_process_free = int(temp_process_free)
                 ent_physical_name_list[entPhysicalName]['proc_memFree'] = aux_process_free
-    #            ent_physical_name_list[entPhysicalName]['total_memFree'] += aux_process_free
+                ent_physical_name_list[entPhysicalName]['total_memFree'] += aux_process_free
 
         elif value == '3':  # IO memory
             ## The original data: true(1) and false(2). In this case this was changed to: true(1) and false(0).
@@ -290,7 +292,7 @@ if mib_toUse == ENHANCED_MIB_MEMPOOL_TYPE:
             if temp_io_used is not None:
                 aux_io_used = int(temp_io_used)
                 ent_physical_name_list[entPhysicalName]['io_memUsed'] = aux_io_used
-    #            ent_physical_name_list[entPhysicalName]['total_memUsed'] += aux_io_used
+                ent_physical_name_list[entPhysicalName]['total_memUsed'] += aux_io_used
 
             temp_io_free = get_oid_value(newMib_oids['HCfree'] + "." + index)
             if temp_io_free is None:
@@ -298,20 +300,20 @@ if mib_toUse == ENHANCED_MIB_MEMPOOL_TYPE:
             if temp_io_free is not None:
                 aux_io_free = int(temp_io_free)
                 ent_physical_name_list[entPhysicalName]['io_memFree'] = aux_io_free
-    #            ent_physical_name_list[entPhysicalName]['total_memFree'] += aux_io_free
+                ent_physical_name_list[entPhysicalName]['total_memFree'] += aux_io_free
 
-    #    else:
-    #        temp_total_used = get_oid_value(newMib_oids['HCused'] + "." + index)
-    #        if temp_total_used is None:
-    #            temp_total_used = get_oid_value(newMib_oids['used'] + "." + index)
-    #        if temp_total_used is not None:
-    #            ent_physical_name_list[entPhysicalName]['total_memUsed'] += int(temp_total_used)
-        #
-    #        temp_total_free = get_oid_value(newMib_oids['HCfree'] + "." + index)
-    #        if temp_total_free is None:
-    #            temp_total_free = get_oid_value(newMib_oids['free'] + "." + index)
-    #        if temp_total_free is not None:
-    #            ent_physical_name_list[entPhysicalName]['total_memFree'] += int(temp_total_free)
+        else:
+            temp_total_used = get_oid_value(newMib_oids['HCused'] + "." + index)
+            if temp_total_used is None:
+                temp_total_used = get_oid_value(newMib_oids['used'] + "." + index)
+            if temp_total_used is not None:
+                ent_physical_name_list[entPhysicalName]['total_memUsed'] += int(temp_total_used)
+        
+            temp_total_free = get_oid_value(newMib_oids['HCfree'] + "." + index)
+            if temp_total_free is None:
+                temp_total_free = get_oid_value(newMib_oids['free'] + "." + index)
+            if temp_total_free is not None:
+                ent_physical_name_list[entPhysicalName]['total_memFree'] += int(temp_total_free)
 
     print(ent_physical_name_list)
 elif mib_toUse == OLD_MEMORY_POOL_NAME:
@@ -343,13 +345,13 @@ elif mib_toUse == OLD_MEMORY_POOL_NAME:
             if temp_old_process_used is not None:
                 aux_old_process_used = int(temp_old_process_used)
                 ent_physical_name_list[entPhysicalName]['proc_memUsed'] = aux_old_process_used
-    #            ent_physical_name_list[entPhysicalName]['total_memUsed'] += aux_old_process_used
+                ent_physical_name_list[entPhysicalName]['total_memUsed'] += aux_old_process_used
 
             temp_old_process_free = get_oid_value(oldMib_oids['free'] + "." + index)
             if temp_old_process_free is not None:
                 aux_old_process_free = int(temp_old_process_free)
                 ent_physical_name_list[entPhysicalName]['proc_memFree'] = aux_old_process_free
-    #            ent_physical_name_list[entPhysicalName]['total_memFree'] += aux_old_process_free
+                ent_physical_name_list[entPhysicalName]['total_memFree'] += aux_old_process_free
 
         elif poolType == '2':  # IO memory
             # The original data: true and false. In this case this was changed to: true(1) and false(0).
@@ -361,22 +363,22 @@ elif mib_toUse == OLD_MEMORY_POOL_NAME:
             if temp_old_io_used is not None:
                 aux_old_io_used = int(temp_old_io_used)
                 ent_physical_name_list[entPhysicalName]['io_memUsed'] = aux_old_io_used
-    #            ent_physical_name_list[entPhysicalName]['total_memUsed'] += aux_old_io_used
+                ent_physical_name_list[entPhysicalName]['total_memUsed'] += aux_old_io_used
 
             temp_old_io_free = get_oid_value(oldMib_oids['free'] + "." + index)
             if temp_old_io_free is not None:
                 aux_old_io_free = int(temp_old_io_free)
                 ent_physical_name_list[entPhysicalName]['io_memFree'] = aux_old_io_free
-    #            ent_physical_name_list[entPhysicalName]['total_memFree'] += aux_old_io_free
+                ent_physical_name_list[entPhysicalName]['total_memFree'] += aux_old_io_free
 
-    #    else:
-    #        temp_old_total_used = get_oid_value(newMib_oids['used'] + "." + index)
-    #        if temp_old_total_used is not None:
-    #            ent_physical_name_list[entPhysicalName]['total_memUsed'] += int(temp_old_total_used)
-        #
-    #        temp_old_total_free = get_oid_value(newMib_oids['free'] + "." + index)
-    #        if temp_old_total_free is not None:
-    #            ent_physical_name_list[entPhysicalName]['total_memFree'] += int(temp_old_total_free)
+        else:
+            temp_old_total_used = get_oid_value(newMib_oids['used'] + "." + index)
+            if temp_old_total_used is not None:
+                ent_physical_name_list[entPhysicalName]['total_memUsed'] += int(temp_old_total_used)
+       
+            temp_old_total_free = get_oid_value(newMib_oids['free'] + "." + index)
+            if temp_old_total_free is not None:
+                ent_physical_name_list[entPhysicalName]['total_memFree'] += int(temp_old_total_free)
 
 elif mib_toUse == FirePower_MemUsedKb:
 
@@ -396,12 +398,12 @@ elif mib_toUse == FirePower_MemUsedKb:
         if memUsedValue:
             scaledIntMemUsedValue = int(memUsedValue) * 1024
             snippet_arguments[pre_obj['proc_memUsed']].append((index, scaledIntMemUsedValue))
-    #        snippet_arguments['total_memUsed'].append((index, scaledIntMemUsedValue))
+            snippet_arguments[pre_obj['total_memUsed']].append((index, scaledIntMemUsedValue))
 
         if memFreeValue:
             scaledIntMemFreeValue = int(memFreeValue) * 1024
             snippet_arguments[pre_obj['proc_memFree']].append((index, scaledIntMemFreeValue))
-    #        snippet_arguments['total_memFree'].append((index, scaledIntMemFreeValue))
+            snippet_arguments[pre_obj['total_memFree']].append((index, scaledIntMemFreeValue))
 
 
 # Collecting data from CISCO-PROCESS-MIB
@@ -424,12 +426,12 @@ elif mib_toUse == PROCESS_cpmCPUMemoryUsed:
         if value:
             scaledIntMemUsedValue = int(value) * 1024
             snippet_arguments[pre_obj['proc_memUsed']].append((index, scaledIntMemUsedValue))
-     #       snippet_arguments['total_memUsed'].append((index, scaledIntMemUsedValue))
+            snippet_arguments[pre_obj['total_memUsed']].append((index, scaledIntMemUsedValue))
 
         if memFreeValue:
             scaledIntMemFreeValue = int(memFreeValue) * 1024
             snippet_arguments[pre_obj['proc_memFree']].append((index, scaledIntMemFreeValue))
-    #      snippet_arguments['total_memFree'].append((index, scaledIntMemFreeValue))
+            snippet_arguments[pre_obj['total_memFree']].append((index, scaledIntMemFreeValue))
 
         if memPhysicalInddexValue:
             label_index_phycialIndexOID[index] = '{0}.{1}'.format(process_mib_oids['label'], memPhysicalInddexValue)
@@ -451,10 +453,17 @@ elif mib_toUse == PROCESS_cpmCPUMemoryUsed:
 for key, value in ent_physical_name_list.items():
     fill_result_handler(value)
 
+idu,us = snippet_arguments['Total Memory Used']
+idf,fr = snippet_arguments['Total Memory Free']
+for idu,us in snippet_arguments['Total Memory Used']:
+    for idf,fr in snippet_arguments['Total Memory Free']:
+        if idu == idu:
+            snippet_arguments['Total Memory Used %'].append((idu,round(us*100/(us+fr),2) if us+fr != 0 else 0))
+            
 #print("mib_toUse", mib_toUse, description)
 #print("snippet_arguments", snippet_arguments, label)
 if snippet_arguments:
     print("Collections collected successfully")
-    pprint(snmp_h.construct_Json(snippet_arguments,label=labels,perf_plugin=True,kpi_unit="Bytes",kpi_suffix="B"))
+    print(snmp_h.construct_Json({"1":snippet_arguments},label={"1":dict(labels)},perf_plugin=True,kpi_unit="Bytes",kpi_suffix="B"))
 else:
     print("Data not collected")
