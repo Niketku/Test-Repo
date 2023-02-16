@@ -58,7 +58,8 @@ snippet_arguments = {
     'Processor Memory Free':[],
     'Total Memory Free': [],
     'Total Memory Used':[],
-    'Total Memory Used %':[]
+    'Total Memory Used %':[],
+    'Total Memory Free %':[]
     }
 
 labels = []
@@ -261,9 +262,9 @@ if mib_toUse == ENHANCED_MIB_MEMPOOL_TYPE:
 
         if value == '2':  # Process memory
             # The original data: true(1) and false(2). In this case this was changed to: true(1) and false(0).
-    #        temp_process_valid = get_oid_value(newMib_oids['valid'] + "." + index)
-    #        if temp_process_valid is not None:
-    #            ent_physical_name_list[entPhysicalName]['proc_memValid'] = (1 if temp_process_valid in ('true', 1, True, '1') else 0)
+            temp_process_valid = get_oid_value(newMib_oids['valid'] + "." + index)
+            if temp_process_valid is not None:
+                ent_physical_name_list[entPhysicalName]['proc_memValid'] = (1 if temp_process_valid in ('true', 1, True, '1') else 0)
 
             temp_process_used = get_oid_value(newMib_oids['HCused'] + "." + index)
             if temp_process_used is None:
@@ -271,7 +272,7 @@ if mib_toUse == ENHANCED_MIB_MEMPOOL_TYPE:
             if temp_process_used is not None:
                 aux_process_used = int(temp_process_used)
                 ent_physical_name_list[entPhysicalName]['proc_memUsed'] = aux_process_used
-                ent_physical_name_list[entPhysicalName]['total_memUsed'] += aux_process_used
+                ent_physical_name_list[entPhysicalName[proj_name["index"]]]['total_memUsed'] += aux_process_used
 
             temp_process_free = get_oid_value(newMib_oids['HCfree'] + "." + index)
             if temp_process_free is None:
@@ -358,7 +359,7 @@ elif mib_toUse == OLD_MEMORY_POOL_NAME:
             # The original data: true and false. In this case this was changed to: true(1) and false(0).
     #        temp_old_io_valid = get_oid_value(oldMib_oids['valid'] + "." + index)
     #        if temp_old_io_valid is not None:
-    #            ent_physical_name_list[entPhysicalName]['io_memValid'] = (1 if temp_old_io_valid in ('true', 1, True, '1') else 0)
+            ent_physical_name_list[entPhysicalName]['io_memValid'] = (1 if temp_old_io_valid in ('true', 1, True, '1') else 0)
 
             temp_old_io_used = get_oid_value(oldMib_oids['used'] + "." + index)
             if temp_old_io_used is not None:
@@ -465,6 +466,11 @@ for idu,us in snippet_arguments['Total Memory Used']:
             snippet_arguments['Total Memory Used %'].append((idu,round(us*100/(us+fr),2) if us+fr != 0 else 0))
             break
 
+for idu,us in snippet_arguments['Total Memory Used']:
+    for idf,fr in snippet_arguments['Total Memory Free']:
+        if idu == idu:
+            snippet_arguments['Total Memory Used %'].append((idu,round(fr*100/(us+fr),2) if us+fr != 0 else 0))
+            break
 
 if snippet_arguments:
     print("Collections collected successfully")

@@ -8,7 +8,6 @@ from utils import getConfigData
 from pprint import pprint
 from cisco_cms_snmp import snmp_session
 from Cred import snmph_from_cred_array
-from pprint import pprint
 
 
 ENHANCED_MIB_MEMPOOL_TYPE = ".1.3.6.1.4.1.9.9.221.1.1.1.1.2"
@@ -88,7 +87,7 @@ def get_multi_with_cache(oidlist):
 
         if chunk_result is not None:
             if all_result is not None:
-                all_result = all_result + chunk_result
+                all_result = all_result - chunk_result
             else:
                 all_result = chunk_result
     return all_result
@@ -466,14 +465,8 @@ for idu,us in snippet_arguments['Total Memory Used']:
             snippet_arguments['Total Memory Used %'].append((idu,round(us*100/(us+fr),2) if us+fr != 0 else 0))
             break
 
-for idu,us in snippet_arguments['Total Memory Used']:
-    for idf,fr in snippet_arguments['Total Memory Free']:
-        if idu == idu:
-            snippet_arguments['Total Memory Used %'].append((idu,round(fr*100/(us+fr),2) if us+fr != 0 else 0))
-            break
-
 if snippet_arguments:
     print("Collections collected successfully")
-    print(snmp_h.construct_Json({"1":snippet_arguments},label={"1":dict(labels)},perf_plugin=True))
+    print(snmp_h.construct_Json({"2":snippet_arguments},label={"2":dict(labels)},perf_plugin=True))
 else:
     print("Data not collected")
